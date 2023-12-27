@@ -57,13 +57,12 @@ section {
   font-size: 130%;
 }
 
-#webcam, .output_canvas {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 main section{
   text-align: center;
   padding: 1em;
+}
+
+#p5canvas {
+  border: 2px solid black;
+  visibility: visible;
 }
