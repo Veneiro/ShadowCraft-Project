@@ -16,39 +16,24 @@ function setup() {
 function draw() {
   background(255);
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
-   if (handPoints.length > 0) {
-    console.log("handPoints ", handPoints)
-    let points = [
-      [-0.244444444444444444444444, -0.844444444444444444444444444],
-      [ 0.1444444444444444444444444, -0.8444444444],
-      [ 0.5, -0.7],
-      [ 0.6, -0.6],
-      [-0.5, -0.5],
-      [ 0.3, -0.4],
-      [-0.6, -0.2],
-      [-0.35, -0.18],
-      [0.05, -0.2],
-      [-0.1, 0.1],
-      [-0.6, 0.2],
-      [0.05, 0.4],
-      [-0.5, 0.5],
-      [ 0.5, 0.55],
-      [-0.1, 0.7],
-      [ 0.2, 0.8]
-    ];
-    console.log("points ", points)
-    let calculated_hull = concaveHull.calculate(handPoints, 3)
-    console.log("concaveHull ", calculated_hull)
+   if (handPoints.length > 3) {
+    //console.log("handPoints ", handPoints)
+    let hull = concaveHull.calculate(handPoints, 3)
+    //console.log("concaveHull ", hull)
     // Calcula el casco convexo utilizando la librería concavehull
     //let hull = concaveHull.calculate(handPoints, 3);
     // Dibuja el casco convexo
+
     beginShape();
     fill(0, 0, 255, 50); // Ajusta la opacidad según tus necesidades
     noStroke();
     for (let i = 0; i < hull.length; i++) {
-      vertex(hull[i].x, hull[i].y);
+      let x, y = normalizedToCanvasCoordinates(hull[i][0], hull[i][1])
+      vertex(x, y);
     }
     endShape(CLOSE);
+    console.log(handPoints)
+    handPoints = []
   }
   for (let i = 0; i < activeCircles.length; i++) {
     activeCircles[i].update();
