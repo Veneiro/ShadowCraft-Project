@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shadowcraft Project : WebcamDemo</title>
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Agrega los enlaces a las bibliotecas necesarias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.10.0/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.10.0/hands.js"></script>
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <!-- Agrega tu código personalizado -->
+    <script src="./prueba.js"></script>
+</head>
+<body>
+    <header>
+        <h1>SHADOWCRAFT DEMO PREVIEW</h1>
+    </header>
+    <main>
+        <section id="liveView" class="videoView">
+            <button id="webcamButton" class="mdc-button mdc-button--raised">
+                <span class="mdc-button__ripple"></span>
+                <span class="mdc-button__label">ENABLE WEBCAM</span>
+            </button>
+            <section style="position: relative">
+                <video hidden id="webcam" autoplay playsinline></video>
+                <div id="p5canvas_container"></div>
+            </section>
+        </section>
+    </main>
+</body>
+</html>

@@ -13,8 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"
     crossorigin="anonymous"></script>
     <script src="./getCanvas.js"></script>
-    <script src="./sketch.js"></script>
     <script type="module" src="./script.js"></script>
+    <script src="./sketch.js"></script>
   </head>
   <body>
     <!-- partial:index.partial.html -->
@@ -62,6 +62,7 @@ limitations under the License. -->
             autoplay
             playsinline
           ></video>
+          <canvas class="output_canvas" id="output_canvas" style="position: absolute; left: 0px; top: 0px;"></canvas>
           <div id="p5canvas_container"></div>
         </section>
       </section>
