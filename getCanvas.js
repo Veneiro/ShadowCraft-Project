@@ -1,7 +1,7 @@
 let canvasElement;
 let canvasCtx;
-let xHand = [];
-let yHand = [];
+let xHand;
+let yHand;
 
 function getP5Canvas(){
     canvasElement = document.getElementById("p5canvas");
@@ -9,8 +9,8 @@ function getP5Canvas(){
 }
 
 function setCoords(x, y){
-    this.xHand.push(x);
-    this.yHand.push(y);
+    this.xHand = x;
+    this.yHand = y;
 }
 
 function getXHand(){
