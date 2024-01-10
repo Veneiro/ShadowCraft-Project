@@ -6,7 +6,7 @@ function setup() {
   let canvas = createCanvas(1280, 720);
   canvas.id("p5canvas")
   canvas.parent("p5canvas_container");
-  frameRate(240);
+  frameRate(144);
   noStroke();
 
   getP5Canvas();

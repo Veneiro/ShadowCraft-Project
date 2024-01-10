@@ -4,6 +4,13 @@ let xHandLeft;
 let yHandLeft;
 let xHandRight;
 let yHandRight;
+let x1Right;
+let x1Left;
+let x2Right;
+let x2Left;
+let x3Right;
+let x3Left;
+
 
 function getP5Canvas(){
     canvasElement = document.getElementById("p5canvas");

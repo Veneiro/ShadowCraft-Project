@@ -2,33 +2,29 @@ let frozenCircles = [];
 let activeCircles = [];
 let handPoints;
 
+// Número máximo de círculos activos permitidos
+const maxActiveCircles = 10;
+
 function setup() {
   let canvas = createCanvas(1280, 720);
-  canvas.id("p5canvas")
+  canvas.id("p5canvas");
   canvas.parent("p5canvas_container");
-  frameRate(240);
+  frameRate(144);
   noStroke();
 
   getP5Canvas();
-  background(0, 0, 0, 0);
 }
 
 function draw() {
-  clear();
-  if (getXHandLeft() !== null && getYHandLeft() !== null) {
-    let newCircleLeft = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).x,
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).y
-    );
-    activeCircles.push(newCircleLeft);
-  }
+  background(255, 0); // Fondo transparente
+  if (handPoints && handPoints.length > 0) {
+    let newCircles = new FadingCircles(handPoints);
+    activeCircles.push(newCircles);
 
-  if (getXHandRight() !== null && getYHandRight() !== null) {
-    let newCircleRight = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).x,
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).y
-    );
-    activeCircles.push(newCircleRight);
+    // Mantener solo un número limitado de círculos activos
+    if (activeCircles.length > maxActiveCircles) {
+      activeCircles.shift(); // Eliminar el círculo más antiguo
+    }
   }
 
   for (let i = 0; i < activeCircles.length; i++) {
@@ -40,23 +36,18 @@ function draw() {
     frozenCircles[i].display();
   }
 
-  // Eliminar círculos que hayan alcanzado una opacidad mínima
-  activeCircles  = activeCircles.filter((circle) => int(circle.alpha) > 0);
-  
-   // Mover los círculos activos a los círculos congelados al presionar la barra espaciadora
-  if (keyIsDown(32) && activeCircles.length > 0) {
-    frozenCircles = frozenCircles.concat(activeCircles);
-    activeCircles = [];
-  }
+  // Eliminar círculos congelados que hayan alcanzado una opacidad mínima
+  frozenCircles = frozenCircles.filter((circle) => int(circle.alpha) > 0);
 }
 
-class FadingCircle {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+class FadingCircles {
+  constructor(points) {
+    this.points = points;
     this.alpha = 255; // Opacidad inicial
     this.initialTime = millis(); // Tiempo inicial
     this.halfLife = 1000; // Tiempo de half-life en milisegundos
+    this.circleSize = 10; // Tamaño del círculo
+    this.pointsPerFrame = 2; // Puntos por actualización
   }
 
   update() {
@@ -65,11 +56,25 @@ class FadingCircle {
 
     // Calcular la opacidad utilizando la fórmula del half-life
     this.alpha = 255 * pow(0.5, elapsedTime / this.halfLife);
+
+    // Reducir la cantidad de puntos si hay demasiados
+    this.points = this.points.slice(this.pointsPerFrame);
+
+    // Actualizar el tiempo inicial solo si hay puntos restantes
+    if (this.points.length > 0) {
+      this.initialTime = millis();
+    }
   }
 
   display() {
     fill(0, 0, 255, this.alpha);
-    ellipse(this.x, this.y, 50, 50);
+    for (let i = 0; i < this.points.length; i++) {
+      let { x, y } = normalizedToCanvasCoordinates(
+        this.points[i][0],
+        this.points[i][1]
+      );
+      ellipse(x, y, this.circleSize, this.circleSize);
+    }
   }
 }
 
