@@ -4,7 +4,7 @@ let handPoints;
 
 function setup() {
   let canvas = createCanvas(1280, 720);
-  canvas.id("p5canvas")
+  canvas.id("p5canvas");
   canvas.parent("p5canvas_container");
   frameRate(240);
   noStroke();
@@ -15,21 +15,21 @@ function setup() {
 
 function draw() {
   clear();
-  if (getXHandLeft() !== null && getYHandLeft() !== null) {
-    let newCircleLeft = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).x,
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).y
-    );
-    activeCircles.push(newCircleLeft);
-  }
 
-  if (getXHandRight() !== null && getYHandRight() !== null) {
-    let newCircleRight = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).x,
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).y
-    );
-    activeCircles.push(newCircleRight);
-  }
+  // Generar un nuevo círculo en cada fotograma
+  generateCircles(
+    getXHandLeft(),
+    getYHandLeft(),
+    normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).x,
+    normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).y
+  );
+
+  generateCircles(
+    getXHandRight(),
+    getYHandRight(),
+    normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).x,
+    normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).y
+  );
 
   for (let i = 0; i < activeCircles.length; i++) {
     activeCircles[i].update();
@@ -41,12 +41,21 @@ function draw() {
   }
 
   // Eliminar círculos que hayan alcanzado una opacidad mínima
-  activeCircles  = activeCircles.filter((circle) => int(circle.alpha) > 0);
-  
-   // Mover los círculos activos a los círculos congelados al presionar la barra espaciadora
+  activeCircles = activeCircles.filter((circle) => int(circle.alpha) > 0);
+
+  // Mover los círculos activos a los círculos congelados al presionar la barra espaciadora
   if (keyIsDown(32) && activeCircles.length > 0) {
     frozenCircles = frozenCircles.concat(activeCircles);
     activeCircles = [];
+  }
+}
+
+function generateCircles(handX, handY, canvasX, canvasY) {
+  // Verificar si la mano tiene una posición válida (no es null o undefined)
+  if (handX !== null && handY !== null) {
+    // Crear un nuevo círculo en cada fotograma
+    let newCircle = new FadingCircle(canvasX, canvasY);
+    activeCircles.push(newCircle);
   }
 }
 
@@ -56,7 +65,8 @@ class FadingCircle {
     this.y = y;
     this.alpha = 255; // Opacidad inicial
     this.initialTime = millis(); // Tiempo inicial
-    this.halfLife = 1000; // Tiempo de half-life en milisegundos
+    this.halfLife = 500; // Tiempo de half-life en milisegundos (ajustado para un desvanecimiento más rápido)
+    this.circleSize = 20; // Tamaño del círculo
   }
 
   update() {
@@ -69,7 +79,7 @@ class FadingCircle {
 
   display() {
     fill(0, 0, 255, this.alpha);
-    ellipse(this.x, this.y, 50, 50);
+    ellipse(this.x, this.y, this.circleSize, this.circleSize);
   }
 }
 
