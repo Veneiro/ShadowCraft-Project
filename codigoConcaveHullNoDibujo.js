@@ -1,6 +1,7 @@
 let frozenCircles = [];
 let activeCircles = [];
-let handPoints;
+let handPoints = [];
+
 
 function setup() {
   let canvas = createCanvas(1280, 720);
@@ -14,25 +15,26 @@ function setup() {
 
 function draw() {
   background(255);
-  // Dibujar círculo para la mano izquierda
-  // Dibujar círculo para la mano izquierda
-  if (getXHandLeft() !== null && getYHandLeft() !== null) {
-    let newCircleLeft = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).x,
-      normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).y
-    );
-    activeCircles.push(newCircleLeft);
-  }
+  // Dibuja el casco convexo solo si hay puntos de la mano disponibles
+   if (handPoints.length > 3) {
+    //console.log("handPoints ", handPoints)
+    let hull = concaveHull.calculate(handPoints, 3)
+    console.log("concaveHull ", hull)
+    // Calcula el casco convexo utilizando la librería concavehull
+    //let hull = concaveHull.calculate(handPoints, 3);
+    // Dibuja el casco convexo
 
-  // Dibujar círculo para la mano derecha
-  if (getXHandRight() !== null && getYHandRight() !== null) {
-    let newCircleRight = new FadingCircle(
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).x,
-      normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).y
-    );
-    activeCircles.push(newCircleRight);
+    beginShape();
+    fill(0, 0, 255, 50); // Ajusta la opacidad según tus necesidades
+    noStroke();
+    for (let i = 0; i < hull.length; i++) {
+      let x, y = normalizedToCanvasCoordinates(hull[i][0], hull[i][1])
+      vertex(x, y);
+    }
+    endShape(CLOSE);
+    console.log(handPoints)
+    handPoints = []
   }
-
   for (let i = 0; i < activeCircles.length; i++) {
     activeCircles[i].update();
     activeCircles[i].display();
@@ -88,7 +90,6 @@ function normalizedToCanvasCoordinates(normalizedX, normalizedY) {
   return { x: canvasX, y: canvasY };
 }
 
-function setHandPoints(points) {
-  handPoints = [];
+function setHandPoints(points){
   handPoints = points;
 }
