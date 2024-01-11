@@ -87,7 +87,7 @@ function enableCam(event) {
 }
 let lastVideoTime = -1;
 let results = undefined;
-let handPoints = [];
+
 async function predictWebcam() {
   canvasElement.style.width = video.videoWidth;
   canvasElement.style.height = video.videoHeight;
@@ -112,6 +112,7 @@ async function predictWebcam() {
       });
       drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
       */
+  let handPoints = [];
   if (results.landmarks) {
     for (const landmarks of results.landmarks) {
       for (let i = 0; i < landmarks.length; i++) {
@@ -119,6 +120,8 @@ async function predictWebcam() {
         const handIndex = i < landmarks.length / 2.5 ? "Left" : "Right";
         if (handIndex === "Left") {
           setCoordsLeft(point.x, point.y);
+        } else{
+          setCoordsRight(point.x, point.y)
         }
         handPoints.push([point.x, point.y]);
       }

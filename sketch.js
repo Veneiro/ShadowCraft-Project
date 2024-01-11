@@ -1,12 +1,12 @@
-let frozenCircles = [];
-let activeCircles = [];
-let handPoints;
+let frozenHulls = [];
+let activeHulls = [];
+let handPoints = [];
 
 function setup() {
   let canvas = createCanvas(1280, 720);
   canvas.id("p5canvas");
   canvas.parent("p5canvas_container");
-  frameRate(240);
+  frameRate(144);
   noStroke();
 
   getP5Canvas();
@@ -15,72 +15,53 @@ function setup() {
 
 function draw() {
   clear();
+  // Dibuja el casco convexo solo si hay puntos de la mano disponibles
+  if (handPoints.length > 3) {
+    // Calcula el casco convexo utilizando la librería concavehull
+    let hull = concaveHull.calculate(handPoints, 3);
 
-  // Generar un nuevo círculo en cada fotograma
-  generateCircles(
-    getXHandLeft(),
-    getYHandLeft(),
-    normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).x,
-    normalizedToCanvasCoordinates(getXHandLeft(), getYHandLeft()).y
-  );
+    // Dibuja el casco convexo con efecto de estela y desvanecimiento
+    drawFadingHull(hull);
 
-  generateCircles(
-    getXHandRight(),
-    getYHandRight(),
-    normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).x,
-    normalizedToCanvasCoordinates(getXHandRight(), getYHandRight()).y
-  );
+    // Almacena el casco convexo activo
+    activeHulls.push({ points: hull, alpha: 255 });
 
-  for (let i = 0; i < activeCircles.length; i++) {
-    activeCircles[i].update();
-    activeCircles[i].display();
+    // Limpia los puntos de la mano
+    handPoints = [];
   }
 
-  for (let i = 0; i < frozenCircles.length; i++) {
-    frozenCircles[i].display();
+  for (let i = 0; i < activeHulls.length; i++) {
+    activeHulls[i].alpha -= 2; // Reduce la opacidad con el tiempo
+    if (activeHulls[i].alpha > 0) {
+      // Dibuja el casco convexo con el efecto de desvanecimiento
+      drawFadingHull(activeHulls[i].points, activeHulls[i].alpha);
+    }
   }
 
-  // Eliminar círculos que hayan alcanzado una opacidad mínima
-  activeCircles = activeCircles.filter((circle) => int(circle.alpha) > 0);
-
-  // Mover los círculos activos a los círculos congelados al presionar la barra espaciadora
-  if (keyIsDown(32) && activeCircles.length > 0) {
-    frozenCircles = frozenCircles.concat(activeCircles);
-    activeCircles = [];
+  for (let i = 0; i < frozenHulls.length; i++) {
+    // Dibuja los cascos congelados
+    drawFadingHull(frozenHulls[i].points, frozenHulls[i].alpha);
   }
-}
 
-function generateCircles(handX, handY, canvasX, canvasY) {
-  // Verificar si la mano tiene una posición válida (no es null o undefined)
-  if (handX !== null && handY !== null) {
-    // Crear un nuevo círculo en cada fotograma
-    let newCircle = new FadingCircle(canvasX, canvasY);
-    activeCircles.push(newCircle);
+  // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
+  activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
+
+  // Mueve los cascos convexos activos a los cascos congelados al presionar la barra espaciadora
+  if (keyIsDown(32) && activeHulls.length > 0) {
+    frozenHulls = frozenHulls.concat(activeHulls);
+    activeHulls = [];
   }
 }
 
-class FadingCircle {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.alpha = 255; // Opacidad inicial
-    this.initialTime = millis(); // Tiempo inicial
-    this.halfLife = 500; // Tiempo de half-life en milisegundos (ajustado para un desvanecimiento más rápido)
-    this.circleSize = 20; // Tamaño del círculo
+function drawFadingHull(hull, alpha = 255) {
+  beginShape();
+  fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
+  noStroke();
+  for (let i = 0; i < hull.length; i++) {
+    let { x, y } = normalizedToCanvasCoordinates(hull[i][0], hull[i][1]);
+    vertex(x, y);
   }
-
-  update() {
-    // Calcular el tiempo transcurrido
-    let elapsedTime = millis() - this.initialTime;
-
-    // Calcular la opacidad utilizando la fórmula del half-life
-    this.alpha = 255 * pow(0.5, elapsedTime / this.halfLife);
-  }
-
-  display() {
-    fill(0, 0, 255, this.alpha);
-    ellipse(this.x, this.y, this.circleSize, this.circleSize);
-  }
+  endShape(CLOSE);
 }
 
 // Función para convertir coordenadas normalizadas a coordenadas de p5.js
@@ -97,6 +78,5 @@ function normalizedToCanvasCoordinates(normalizedX, normalizedY) {
 }
 
 function setHandPoints(points) {
-  handPoints = [];
   handPoints = points;
 }

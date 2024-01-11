@@ -1,3 +1,5 @@
+//import { concaveHull } from "./concaveHull";
+
 let activeCircles = [];
 let handPoints;
 
@@ -17,6 +19,25 @@ function draw() {
   if (handPoints && handPoints.length > 0) {
     let newCircles = new FadingCircles(handPoints);
     activeCircles.push(newCircles);
+
+    let vertices = concaveHull.calculate(handPoints, 5);
+    if (vertices.length >0) {
+    let p1 = vertices[0];
+    strokeWeight(15);
+    stroke(51);
+    for (let i = 1; i < vertices.length; i++) {
+      p2 = vertices[i];
+
+      line(p1[0],p1[1],p2[0],p2[1]);
+      p1 = p2;
+    }
+//    beginShape();
+//    for (let i = 0; i < vertices.length; i++) {
+//      let v = vertices[i];
+//      vertex(v[0], v[1]);
+//    }
+//    endShape(CLOSE);
+    }
   }
 
   for (let i = activeCircles.length - 1; i >= 0; i--) {

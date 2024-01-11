@@ -10,11 +10,11 @@ function setup() {
   noStroke();
 
   getP5Canvas();
+  background(0,0,0,0);
 }
 
 function draw() {
-  background(255);
-
+  clear();
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
   if (handPoints.length > 3) {
     console.log(handPoints)
