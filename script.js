@@ -113,21 +113,18 @@ async function predictWebcam() {
       drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
       */
   if (results.landmarks) {
-    for (const landmarks of results.landmarks) {
-      for (let i = 0; i < landmarks.length; i++) {
-        let point = landmarks[i];
-        const handIndex = i < landmarks.length / 2.5 ? "Left" : "Right";
-        if (handIndex === "Left") {
-          setCoordsLeft(point.x, point.y);
-        }
-        handPoints.push([point.x, point.y]);
-      }
+    console.log(results.handednesses)
+    for(let hand = 0; hand < results.handednesses.length; hand++){
+      if(hand == 0)
+        setCoordsLeft(results.landmarks[hand][8].x, results.landmarks[hand][8].y)
+      else
+        setCoordsRight(results.landmarks[hand][8].x, results.landmarks[hand][8].y)
     }
-    setHandPoints(handPoints);
     canvasCtx.restore();
     // Call this function again to keep predicting when the browser is ready.
     if (webcamRunning === true) {
       window.requestAnimationFrame(predictWebcam);
     }
   }
+
 }
