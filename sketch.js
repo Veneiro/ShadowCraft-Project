@@ -1,5 +1,9 @@
 let frozenCircles = [];
 let activeCircles = [];
+  
+let continuous = true;
+
+let speechRec;
 
 
 function setup() {
@@ -10,6 +14,18 @@ function setup() {
   noStroke();
 
   getP5Canvas();
+
+  speechRec = new p5.SpeechRec('en-US', gotSpeech);
+
+  speechRec.start(true);
+
+  function gotSpeech(){
+    console.log(speechRec.resultString);
+
+    if(speechRec.resultString.includes("stop"))
+      console.log("stop mentioned!");
+  }
+  
 }
 
 function draw() {
@@ -34,6 +50,8 @@ function draw() {
     frozenCircles = frozenCircles.concat(activeCircles);
     activeCircles = [];
   }
+
+  
 }
 
 class FadingCircle {
@@ -57,6 +75,8 @@ class FadingCircle {
     fill(0, 0, 255, this.alpha);
     ellipse(this.x, this.y, 50, 50);
   }
+
+  
 }
 
 // Función para convertir coordenadas normalizadas a coordenadas de p5.js
