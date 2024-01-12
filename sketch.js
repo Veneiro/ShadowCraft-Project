@@ -30,27 +30,31 @@ function setup() {
   speechRec = new p5.SpeechRec('es-ES', gotSpeech);
 
   speechRec.start(continuous, interim);
-
-  function gotSpeech(){
-    console.log(speechRec.resultString);
-
-    if(!drawing && speechRec.resultString.includes(commands.START)) {
-      console.log("Iniciando...");
-      drawing = true;
-    }
-    if(drawing && speechRec.resultString.includes(commands.FREEZE))
-      console.log("¡Congelado!");
-    if(drawing && speechRec.resultString.includes(commands.FINISH)){
-      console.log("Parando");
-      drawing = false;
-    }
-
-  }
   
+}
+
+function gotSpeech(){
+  console.log(speechRec.resultString);
+
+  if(!drawing && speechRec.resultString.includes(commands.START)) {
+    console.log("Iniciando...");
+    drawing = true;
+  }
+  if(drawing && speechRec.resultString.includes(commands.FREEZE))
+    console.log("¡Congelado!");
+  if(drawing && speechRec.resultString.includes(commands.FINISH)){
+    console.log("Parando");
+    drawing = false;
+  }
+
 }
 
 function draw() {
   clear();
+
+  if(!drawing)
+    return;
+
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
   if (handPoints.length > 3) {
     // Calcula el casco convexo utilizando la librería concavehull
