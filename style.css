@@ -58,7 +58,6 @@ section {
 }
 
 main section{
-  text-align: center;
   padding: 1em;
 }
 
@@ -66,6 +65,15 @@ main section{
   border: 2px solid black;
   visibility: visible;
   transform: rotateY(180deg);
-  -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-  -moz-transform:rotateY(180deg); /* Firefox */
+  position:absolute;
+  background: transparent;
+}
+
+/*#output_canvas{
+  transform: rotateY(180deg);
+}*/
+
+video{
+  transform: rotateY(180deg);
+  position:absolute;
 }

@@ -5,6 +5,8 @@ Demo using MediaPipe Handpose
 https://github.com/markroland/concaveHullJS
 ### Try to smooth curves
 https://github.com/peilingjiang/p5.bezier
+### Smooth with Blobs
+https://medium.com/@alptuan/trigonometric-blobs-f8a41fb7fba0
 
 ## Voice prompts for Start and Stop paint recording
 https://idmnyu.github.io/p5.js-speech/#examples
@@ -15,4 +17,5 @@ https://idmnyu.github.io/p5.js-speech/#examples
 - Stop: Save the current state of the canvas to an svg archive
 
 ## Decaimiento Exponencial
-Trace of the hands to do the drawing
+Trace of the hands to do the drawing with Half-Life formula
+https://en.wikipedia.org/wiki/Half-life

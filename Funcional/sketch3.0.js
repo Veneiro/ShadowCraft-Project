@@ -1,19 +1,7 @@
 let frozenHulls = [];
 let activeHulls = [];
 let handPoints = [];
-let handPointsOtherHand = [];  
-let continuous = true;
-let interim = false;  //activar para que escuche constantemente
-
-let speechRec;
-
-let drawing = false;  //variable de control para los comandos por voz
-
-const commands = {
-  START: "iniciar",
-  FREEZE: "congelar",
-  FINISH:"finalizar"
-}
+let handPointsOtherHand = [];
 
 function setup() {
   let canvas = createCanvas(1280, 720);
@@ -24,29 +12,6 @@ function setup() {
 
   getP5Canvas();
   background(0, 0, 0, 0);
-
-  //Se puede cambiar para que constantemente esté escuchando y
-  //el procesado de comandos verbales se haga más rápido
-  speechRec = new p5.SpeechRec('es-ES', gotSpeech);
-
-  speechRec.start(continuous, interim);
-
-  function gotSpeech(){
-    console.log(speechRec.resultString);
-
-    if(!drawing && speechRec.resultString.includes(commands.START)) {
-      console.log("Iniciando...");
-      drawing = true;
-    }
-    if(drawing && speechRec.resultString.includes(commands.FREEZE))
-      console.log("¡Congelado!");
-    if(drawing && speechRec.resultString.includes(commands.FINISH)){
-      console.log("Parando");
-      drawing = false;
-    }
-
-  }
-  
 }
 
 function draw() {
@@ -60,7 +25,7 @@ function draw() {
     if (hull) {
       drawFadingBlob(hull);
       // Almacena el casco convexo activo
-      activeHulls.push({ points: hull, alpha: 255 });
+      activeHulls.push({ points: hull, startTime: millis(), alpha: 255 });
     }
 
     // Limpia los puntos de la mano
@@ -75,7 +40,7 @@ function draw() {
     if (hullSH) {
       drawFadingBlob(hullSH);
       // Almacena el casco convexo activo
-      activeHulls.push({ points: hullSH, alpha: 255 });
+      activeHulls.push({ points: hullSH, startTime: millis(), alpha: 255 });
     }
 
     // Limpia los puntos de la otra mano
@@ -83,7 +48,9 @@ function draw() {
   }
 
   for (let i = 0; i < activeHulls.length; i++) {
-    activeHulls[i].alpha -= 2; // Reduce la opacidad con el tiempo
+    let elapsedTime = millis() - activeHulls[i].startTime;
+    activeHulls[i].alpha = 255 * pow(0.5, elapsedTime / 1000); // Ajusta el tiempo de half-life según sea necesario
+
     if (activeHulls[i].alpha > 0) {
       // Dibuja el casco convexo con el efecto de desvanecimiento y "blob"
       drawFadingBlob(activeHulls[i].points, activeHulls[i].alpha);
@@ -103,8 +70,6 @@ function draw() {
     frozenHulls = frozenHulls.concat(activeHulls);
     activeHulls = [];
   }
-
-  
 }
 
 function drawFadingBlob(blob, alpha = 255) {
@@ -112,9 +77,13 @@ function drawFadingBlob(blob, alpha = 255) {
   fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
   noStroke();
 
+  // Itera sobre los puntos del casco convexo
   for (let i = 0; i < blob.length; i++) {
+    // Obtén las coordenadas en el canvas
     let { x, y } = normalizedToCanvasCoordinates(blob[i][0], blob[i][1]);
+    // Dibuja el punto actual
     vertex(x, y);
+    // Añade curvas de Bezier suaves entre los puntos para suavizar la forma del blob
     if (i > 0) {
       let prev = normalizedToCanvasCoordinates(blob[i - 1][0], blob[i - 1][1]);
       let next = normalizedToCanvasCoordinates(blob[(i + 1) % blob.length][0], blob[(i + 1) % blob.length][1]);
@@ -123,19 +92,6 @@ function drawFadingBlob(blob, alpha = 255) {
       bezierVertex(control1.x, control1.y, x, y, control2.x, control2.y);
     }
   }
-
-  // Añadir un punto intermedio entre el último y el primer punto
-  let firstPoint = normalizedToCanvasCoordinates(blob[0][0], blob[0][1]);
-  let lastPoint = normalizedToCanvasCoordinates(blob[blob.length - 1][0], blob[blob.length - 1][1]);
-  let extraPoint = createVector((firstPoint.x + lastPoint.x) / 2, (firstPoint.y + lastPoint.y) / 2);
-  bezierVertex(
-    createControlPoint(lastPoint, extraPoint).x,
-    createControlPoint(lastPoint, extraPoint).y,
-    extraPoint.x,
-    extraPoint.y,
-    createControlPoint(extraPoint, firstPoint).x,
-    createControlPoint(extraPoint, firstPoint).y
-  );
 
   endShape(CLOSE);
 }

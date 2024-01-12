@@ -87,7 +87,7 @@ function enableCam(event) {
 }
 let lastVideoTime = -1;
 let results = undefined;
-console.log(video);
+
 async function predictWebcam() {
   canvasElement.style.width = video.videoWidth;
   canvasElement.style.height = video.videoHeight;
@@ -105,19 +105,32 @@ async function predictWebcam() {
   }
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  if (results.landmarks) {
-    let i = 0;
-    for (const landmarks of results.landmarks) {
-      /*drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+  /*
+     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
         color: "#00FF00",
         lineWidth: 5,
       });
       drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
       */
-      let point = landmarks[i];
-      setCoords(point.x, point.y);
-      i++;
+  let handPoints = [];
+  let handPointsOtherHand = [];
+  if (results.landmarks) {
+    for(let h = 0; h < results.landmarks.length; h++){
+      let landmarks = results.landmarks[h];
+      for (let i = 0; i < landmarks.length; i++) {
+        let point = landmarks[i];
+        if(h == 0){
+          handPoints.push([point.x, point.y]);
+        } else {
+          handPointsOtherHand.push([point.x, point.y]);
+        }
+      }
     }
+    //for (const landmarks of results.landmarks) {
+      
+    //}
+    setHandPoints(handPoints);
+    setHandPointsOtherHand(handPointsOtherHand);
     canvasCtx.restore();
     // Call this function again to keep predicting when the browser is ready.
     if (webcamRunning === true) {
