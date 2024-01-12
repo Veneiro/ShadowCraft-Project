@@ -110,7 +110,9 @@ async function predictWebcam() {
         color: "#00FF00",
         lineWidth: 5,
       });
+      for (const landmarks of results.landmarks) {
       drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+    }
       */
   let handPoints = [];
   let handPointsOtherHand = [];
@@ -119,16 +121,13 @@ async function predictWebcam() {
       let landmarks = results.landmarks[h];
       for (let i = 0; i < landmarks.length; i++) {
         let point = landmarks[i];
-        if(h == 0){
+        if(h == 0 && (i==0 || i == 1 || i==4 || i==8 || i ==12 || i==16 || i == 17 || i==20)){
           handPoints.push([point.x, point.y]);
-        } else {
+        } else if(h == 1 && (i==0 || i == 1  || i==4 || i==8 || i ==12 || i==16 || i == 17 || i==20)) {
           handPointsOtherHand.push([point.x, point.y]);
         }
       }
     }
-    //for (const landmarks of results.landmarks) {
-      
-    //}
     setHandPoints(handPoints);
     setHandPointsOtherHand(handPointsOtherHand);
     canvasCtx.restore();

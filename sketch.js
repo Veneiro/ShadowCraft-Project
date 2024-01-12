@@ -1,7 +1,9 @@
 let frozenHulls = [];
 let activeHulls = [];
+let storedHulls = [];
 let handPoints = [];
 let handPointsOtherHand = [];  
+let grabando = false;
 let continuous = true;
 let interim = false;  //activar para que escuche constantemente
 
@@ -65,8 +67,10 @@ function draw() {
       drawFadingBlob(hull);
       // Almacena el casco convexo activo
       activeHulls.push({ points: hull, alpha: 255 });
+      if (grabando) {
+        storedHulls.push({ points: hull, alpha: 255 });
+      }
     }
-
     // Limpia los puntos de la mano
     handPoints = [];
   }
@@ -94,6 +98,16 @@ function draw() {
     }
   }
 
+  for(let i = 0; i<storedHulls.length; i++){
+    if (grabando) {
+      storedHulls[i].alpha -= 2;
+      if (storedHulls[i].alpha > 0) {
+        // Dibuja el casco convexo con el efecto de desvanecimiento y "blob"
+        drawFadingBlob(storedHulls[i].points, storedHulls[i].alpha);
+      }
+    }
+  }
+
   for (let i = 0; i < frozenHulls.length; i++) {
     // Dibuja los cascos congelados con "blob"
     drawFadingBlob(frozenHulls[i].points, frozenHulls[i].alpha);
@@ -102,10 +116,19 @@ function draw() {
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
   activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
 
+  if (keyIsDown(83) && !grabando) {
+    grabando = true;
+    console.log("Grabando");
+  } else if (keyIsDown(88) && grabando){
+    grabando = false;
+    console.log("Parar de Grabar")
+  }
+
   // Mueve los cascos convexos activos a los cascos congelados al presionar la barra espaciadora
-  if (keyIsDown(70) && activeHulls.length > 0) {
-    frozenHulls = frozenHulls.concat(activeHulls);
-    activeHulls = [];
+  if (keyIsDown(70) && storedHulls.length > 0 && grabando) {
+    console.log("Congelando Trazo")
+    frozenHulls = frozenHulls.concat(storedHulls);
+    storedHulls = [];
   }
 
   
@@ -121,7 +144,10 @@ function drawFadingBlob(blob, alpha = 255) {
     vertex(x, y);
     if (i > 0) {
       let prev = normalizedToCanvasCoordinates(blob[i - 1][0], blob[i - 1][1]);
-      let next = normalizedToCanvasCoordinates(blob[(i + 1) % blob.length][0], blob[(i + 1) % blob.length][1]);
+      let next = normalizedToCanvasCoordinates(
+        blob[(i + 1) % blob.length][0],
+        blob[(i + 1) % blob.length][1]
+      );
       let control1 = createControlPoint(prev, { x, y });
       let control2 = createControlPoint({ x, y }, next);
       bezierVertex(control1.x, control1.y, x, y, control2.x, control2.y);
@@ -130,8 +156,14 @@ function drawFadingBlob(blob, alpha = 255) {
 
   // Añadir un punto intermedio entre el último y el primer punto
   let firstPoint = normalizedToCanvasCoordinates(blob[0][0], blob[0][1]);
-  let lastPoint = normalizedToCanvasCoordinates(blob[blob.length - 1][0], blob[blob.length - 1][1]);
-  let extraPoint = createVector((firstPoint.x + lastPoint.x) / 2, (firstPoint.y + lastPoint.y) / 2);
+  let lastPoint = normalizedToCanvasCoordinates(
+    blob[blob.length - 1][0],
+    blob[blob.length - 1][1]
+  );
+  let extraPoint = createVector(
+    (firstPoint.x + lastPoint.x) / 2,
+    (firstPoint.y + lastPoint.y) / 2
+  );
   bezierVertex(
     createControlPoint(lastPoint, extraPoint).x,
     createControlPoint(lastPoint, extraPoint).y,
