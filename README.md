@@ -17,4 +17,5 @@ https://idmnyu.github.io/p5.js-speech/#examples
 - Stop: Save the current state of the canvas to an svg archive
 
 ## Decaimiento Exponencial
-Trace of the hands to do the drawing
+Trace of the hands to do the drawing with Half-Life formula
+https://en.wikipedia.org/wiki/Half-life
