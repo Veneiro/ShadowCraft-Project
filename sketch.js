@@ -2,9 +2,17 @@ let frozenCircles = [];
 let activeCircles = [];
   
 let continuous = true;
+let interim = false;  //activar para que escuche constantemente
 
 let speechRec;
 
+let drawing = false;  //variable de control para los comandos por voz
+
+const commands = {
+  START: "iniciar",
+  FREEZE: "congelar",
+  FINISH:"finalizar"
+}
 
 function setup() {
   let canvas = createCanvas(1280, 720);
@@ -15,15 +23,26 @@ function setup() {
 
   getP5Canvas();
 
-  speechRec = new p5.SpeechRec('en-US', gotSpeech);
+  //Se puede cambiar para que constantemente esté escuchando y
+  //el procesado de comandos verbales se haga más rápido
+  speechRec = new p5.SpeechRec('es-ES', gotSpeech);
 
-  speechRec.start(true);
+  speechRec.start(continuous, interim);
 
   function gotSpeech(){
     console.log(speechRec.resultString);
 
-    if(speechRec.resultString.includes("stop"))
-      console.log("stop mentioned!");
+    if(!drawing && speechRec.resultString.includes(commands.START)) {
+      console.log("Iniciando...");
+      drawing = true;
+    }
+    if(drawing && speechRec.resultString.includes(commands.FREEZE))
+      console.log("¡Congelado!");
+    if(drawing && speechRec.resultString.includes(commands.FINISH)){
+      console.log("Parando");
+      drawing = false;
+    }
+
   }
   
 }
