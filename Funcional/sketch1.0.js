@@ -23,7 +23,7 @@ function draw() {
 
     // Dibuja el casco convexo con efecto de estela y desvanecimiento
     if (hull) {
-      drawFadingBlob(hull);
+      drawFadingHull(hull);
       // Almacena el casco convexo activo
       activeHulls.push({ points: hull, alpha: 255 });
     }
@@ -38,7 +38,7 @@ function draw() {
 
     // Dibuja el casco convexo con efecto de estela y desvanecimiento
     if (hullSH) {
-      drawFadingBlob(hullSH);
+      drawFadingHull(hullSH);
       // Almacena el casco convexo activo
       activeHulls.push({ points: hullSH, alpha: 255 });
     }
@@ -50,14 +50,14 @@ function draw() {
   for (let i = 0; i < activeHulls.length; i++) {
     activeHulls[i].alpha -= 2; // Reduce la opacidad con el tiempo
     if (activeHulls[i].alpha > 0) {
-      // Dibuja el casco convexo con el efecto de desvanecimiento y "blob"
-      drawFadingBlob(activeHulls[i].points, activeHulls[i].alpha);
+      // Dibuja el casco convexo con el efecto de desvanecimiento
+      drawFadingHull(activeHulls[i].points, activeHulls[i].alpha);
     }
   }
 
   for (let i = 0; i < frozenHulls.length; i++) {
-    // Dibuja los cascos congelados con "blob"
-    drawFadingBlob(frozenHulls[i].points, frozenHulls[i].alpha);
+    // Dibuja los cascos congelados
+    drawFadingHull(frozenHulls[i].points, frozenHulls[i].alpha);
   }
 
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
@@ -70,37 +70,17 @@ function draw() {
   }
 }
 
-function drawFadingBlob(blob, alpha = 255) {
-  beginShape();
-  fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
-  noStroke();
-
-  for (let i = 0; i < blob.length; i++) {
-    let { x, y } = normalizedToCanvasCoordinates(blob[i][0], blob[i][1]);
-    vertex(x, y);
-    if (i > 0) {
-      let prev = normalizedToCanvasCoordinates(blob[i - 1][0], blob[i - 1][1]);
-      let next = normalizedToCanvasCoordinates(blob[(i + 1) % blob.length][0], blob[(i + 1) % blob.length][1]);
-      let control1 = createControlPoint(prev, { x, y });
-      let control2 = createControlPoint({ x, y }, next);
-      bezierVertex(control1.x, control1.y, x, y, control2.x, control2.y);
+function drawFadingHull(hull, alpha = 255) {
+  if (hull) {
+    beginShape();
+    fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
+    noStroke();
+    for (let i = 0; i < hull.length; i++) {
+      let { x, y } = normalizedToCanvasCoordinates(hull[i][0], hull[i][1]);
+      vertex(x, y);
     }
+    endShape(CLOSE);
   }
-
-  // Añadir un punto intermedio entre el último y el primer punto
-  let firstPoint = normalizedToCanvasCoordinates(blob[0][0], blob[0][1]);
-  let lastPoint = normalizedToCanvasCoordinates(blob[blob.length - 1][0], blob[blob.length - 1][1]);
-  let extraPoint = createVector((firstPoint.x + lastPoint.x) / 2, (firstPoint.y + lastPoint.y) / 2);
-  bezierVertex(
-    createControlPoint(lastPoint, extraPoint).x,
-    createControlPoint(lastPoint, extraPoint).y,
-    extraPoint.x,
-    extraPoint.y,
-    createControlPoint(extraPoint, firstPoint).x,
-    createControlPoint(extraPoint, firstPoint).y
-  );
-
-  endShape(CLOSE);
 }
 
 // Función para convertir coordenadas normalizadas a coordenadas de p5.js
@@ -122,14 +102,4 @@ function setHandPoints(points) {
 
 function setHandPointsOtherHand(points) {
   handPointsOtherHand = points;
-}
-
-// Función para crear un punto de control entre dos puntos dados
-function createControlPoint(p1, p2) {
-  let distance = dist(p1.x, p1.y, p2.x, p2.y);
-  let angle = atan2(p2.y - p1.y, p2.x - p1.x);
-  let controlDistance = distance * 0.3; // Ajusta la distancia del punto de control según sea necesario
-  let controlX = p1.x + cos(angle) * controlDistance;
-  let controlY = p1.y + sin(angle) * controlDistance;
-  return createVector(controlX, controlY);
 }

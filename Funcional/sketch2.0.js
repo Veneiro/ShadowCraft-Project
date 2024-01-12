@@ -72,12 +72,16 @@ function draw() {
 
 function drawFadingBlob(blob, alpha = 255) {
   beginShape();
-  fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
+  fill(0, 0, 255, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
   noStroke();
 
+  // Itera sobre los puntos del casco convexo
   for (let i = 0; i < blob.length; i++) {
+    // Obtén las coordenadas en el canvas
     let { x, y } = normalizedToCanvasCoordinates(blob[i][0], blob[i][1]);
+    // Dibuja el punto actual
     vertex(x, y);
+    // Añade curvas de Bezier suaves entre los puntos para suavizar la forma del blob
     if (i > 0) {
       let prev = normalizedToCanvasCoordinates(blob[i - 1][0], blob[i - 1][1]);
       let next = normalizedToCanvasCoordinates(blob[(i + 1) % blob.length][0], blob[(i + 1) % blob.length][1]);
@@ -86,19 +90,6 @@ function drawFadingBlob(blob, alpha = 255) {
       bezierVertex(control1.x, control1.y, x, y, control2.x, control2.y);
     }
   }
-
-  // Añadir un punto intermedio entre el último y el primer punto
-  let firstPoint = normalizedToCanvasCoordinates(blob[0][0], blob[0][1]);
-  let lastPoint = normalizedToCanvasCoordinates(blob[blob.length - 1][0], blob[blob.length - 1][1]);
-  let extraPoint = createVector((firstPoint.x + lastPoint.x) / 2, (firstPoint.y + lastPoint.y) / 2);
-  bezierVertex(
-    createControlPoint(lastPoint, extraPoint).x,
-    createControlPoint(lastPoint, extraPoint).y,
-    extraPoint.x,
-    extraPoint.y,
-    createControlPoint(extraPoint, firstPoint).x,
-    createControlPoint(extraPoint, firstPoint).y
-  );
 
   endShape(CLOSE);
 }
