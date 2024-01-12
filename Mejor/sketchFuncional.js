@@ -1,7 +1,7 @@
 let frozenHulls = [];
 let activeHulls = [];
 let handPoints = [];
-let handPointsOtherHand = [];
+let handPointsOtherHand = []
 
 function setup() {
   let canvas = createCanvas(1280, 720);
@@ -20,31 +20,17 @@ function draw() {
   if (handPoints.length > 3) {
     // Calcula el casco convexo utilizando la librería concavehull
     let hull = concaveHull.calculate(handPoints, 3);
-
-    // Dibuja el casco convexo con efecto de estela y desvanecimiento
-    if (hull) {
-      drawFadingHull(hull);
-      // Almacena el casco convexo activo
-      activeHulls.push({ points: hull, alpha: 255 });
-    }
-
-    // Limpia los puntos de la mano
-    handPoints = [];
-  }
-
-  if (handPointsOtherHand.length > 3) {
-    // Calcula el casco convexo utilizando la librería concavehull
     let hullSH = concaveHull.calculate(handPointsOtherHand, 3);
 
     // Dibuja el casco convexo con efecto de estela y desvanecimiento
-    if (hullSH) {
-      drawFadingHull(hullSH);
-      // Almacena el casco convexo activo
-      activeHulls.push({ points: hullSH, alpha: 255 });
-    }
+    drawFadingHull(hull, hullSH);
 
-    // Limpia los puntos de la otra mano
-    handPointsOtherHand = [];
+    // Almacena el casco convexo activo
+    activeHulls.push({ points: hull, alpha: 255 });
+    //activeHulls.push({ points: hullSH, alpha: 255 });
+
+    // Limpia los puntos de la mano
+    handPoints = [];
   }
 
   for (let i = 0; i < activeHulls.length; i++) {
@@ -71,16 +57,14 @@ function draw() {
 }
 
 function drawFadingHull(hull, alpha = 255) {
-  if (hull) {
-    beginShape();
-    fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
-    noStroke();
-    for (let i = 0; i < hull.length; i++) {
-      let { x, y } = normalizedToCanvasCoordinates(hull[i][0], hull[i][1]);
-      vertex(x, y);
-    }
-    endShape(CLOSE);
+  beginShape();
+  fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
+  noStroke();
+  for (let i = 0; i < hull.length; i++) {
+    let { x, y } = normalizedToCanvasCoordinates(hull[i][0], hull[i][1]);
+    vertex(x, y);
   }
+  endShape(CLOSE);
 }
 
 // Función para convertir coordenadas normalizadas a coordenadas de p5.js
@@ -100,6 +84,6 @@ function setHandPoints(points) {
   handPoints = points;
 }
 
-function setHandPointsOtherHand(points) {
+function setHandPointsOtherHand(points){
   handPointsOtherHand = points;
 }
