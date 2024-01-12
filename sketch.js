@@ -9,8 +9,6 @@ let interim = false;  //activar para que escuche constantemente
 
 let speechRec;
 
-let drawing = false;  //variable de control para los comandos por voz
-
 const commands = {
   START: "iniciar",
   FREEZE: "congelar",
@@ -38,24 +36,18 @@ function setup() {
 function gotSpeech(){
   console.log(speechRec.resultString);
 
-  if(!drawing && speechRec.resultString.includes(commands.START)) {
-    console.log("Iniciando...");
-    drawing = true;
+  if(speechRec.resultString.includes(commands.START)) {
+    startRec();
   }
-  if(drawing && speechRec.resultString.includes(commands.FREEZE))
-    console.log("¡Congelado!");
-  if(drawing && speechRec.resultString.includes(commands.FINISH)){
-    console.log("Parando");
-    drawing = false;
+  if(speechRec.resultString.includes(commands.FREEZE))
+    freeze();
+  if(speechRec.resultString.includes(commands.FINISH)){
+    stopRec();
   }
-
 }
 
 function draw() {
   clear();
-
-  if(!drawing)
-    return;
 
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
   if (handPoints.length > 3) {
@@ -116,22 +108,38 @@ function draw() {
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
   activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
 
-  if (keyIsDown(83) && !grabando) {
-    grabando = true;
-    console.log("Grabando");
-  } else if (keyIsDown(88) && grabando){
-    grabando = false;
-    console.log("Parar de Grabar")
+  if (keyIsDown(83)) {
+    startRec();
+  } else if (keyIsDown(88)){
+    stopRec();
   }
 
   // Mueve los cascos convexos activos a los cascos congelados al presionar la barra espaciadora
-  if (keyIsDown(70) && storedHulls.length > 0 && grabando) {
+  if (keyIsDown(70)) {
+    freeze();
+  }
+}
+
+function startRec() {
+  if(!grabando){
+    grabando = true;
+    console.log("Grabando");
+  }
+}
+
+function stopRec(){
+  if(grabando){
+    grabando = false;
+    console.log("Parar de grabar");
+  }
+}
+
+function freeze(){
+  if(storedHulls.length > 0 && grabando) {
     console.log("Congelando Trazo")
     frozenHulls = frozenHulls.concat(storedHulls);
     storedHulls = [];
   }
-
-  
 }
 
 function drawFadingBlob(blob, alpha = 255) {
