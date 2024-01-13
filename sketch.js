@@ -14,7 +14,8 @@ let guardar = false;
 const commands = {
   START: "iniciar",
   FREEZE: "congelar",
-  FINISH:"finalizar"
+  FINISH: "finalizar",
+  EREASE: "borrar"
 }
 
 function setup() {
@@ -45,6 +46,9 @@ function gotSpeech(){
     freeze();
   if(speechRec.resultString.includes(commands.FINISH)){
     stopRec();
+  }
+  if(speechRec.resultString.includes(commands.EREASE)){
+    erease();
   }
 }
 
@@ -152,6 +156,16 @@ function stopRec(){
     activeHulls = [];
     storedHulls = [];
     guardar = true;
+  }
+}
+
+function erease(){
+  if(grabando){
+    grabando = false;
+    console.log("Borrando lienzo...");
+    activeHulls = [];
+    storedHulls = [];
+    frozenHulls = [];
   }
 }
 
