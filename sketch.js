@@ -9,6 +9,8 @@ let interim = false;  //activar para que escuche constantemente
 
 let speechRec;
 
+let guardar = false;
+
 const commands = {
   START: "iniciar",
   FREEZE: "congelar",
@@ -48,6 +50,9 @@ function gotSpeech(){
 
 function draw() {
   clear();
+
+  if(!grabando && !guardar)
+    return;
 
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
   if (handPoints.length > 3) {
@@ -108,16 +113,29 @@ function draw() {
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
   activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
 
-  if (keyIsDown(83)) {
+  if (keyIsDown(83)) {  //Letra s
     startRec();
-  } else if (keyIsDown(88)){
+  } else if (keyIsDown(88)){  //Letra x
     stopRec();
   }
 
   // Mueve los cascos convexos activos a los cascos congelados al presionar la barra espaciadora
-  if (keyIsDown(70)) {
+  if (keyIsDown(70)) {  //Letra f
     freeze();
   }
+
+  if(keyIsDown(71)){ //Letra g
+    activeHulls = [];
+    storedHulls = [];
+    guardar = true;
+  }
+
+  if(guardar){
+    saveCanvas(canvas, "canvas", "png");
+    guardar = false;
+    frozenHulls = [];
+  }
+
 }
 
 function startRec() {
@@ -131,6 +149,9 @@ function stopRec(){
   if(grabando){
     grabando = false;
     console.log("Parar de grabar");
+    activeHulls = [];
+    storedHulls = [];
+    guardar = true;
   }
 }
 
@@ -213,4 +234,8 @@ function createControlPoint(p1, p2) {
   let controlX = p1.x + cos(angle) * controlDistance;
   let controlY = p1.y + sin(angle) * controlDistance;
   return createVector(controlX, controlY);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
