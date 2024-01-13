@@ -70,7 +70,8 @@ function enableCam(event) {
     enableWebcamButton.innerText = "ENABLE PREDICTIONS";
   } else {
     webcamRunning = true;
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+    enableWebcamButton.disabled = true;
+    enableWebcamButton.innerText = "NOW, START DRAWING!";
   }
   // getUsermedia parameters.
   const constraints = {
@@ -105,15 +106,6 @@ async function predictWebcam() {
   }
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  /*
-     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-        color: "#00FF00",
-        lineWidth: 5,
-      });
-      for (const landmarks of results.landmarks) {
-      drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
-    }
-      */
   let handPoints = [];
   let handPointsOtherHand = [];
   if (results.landmarks) {

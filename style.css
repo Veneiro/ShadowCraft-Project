@@ -16,19 +16,29 @@ body {
   font-family: roboto;
   margin: 2em;
   color: #3d3d3d;
-  --mdc-theme-primary: #007f8b;
-  --mdc-theme-on-primary: #f1f3f4;
+  --mdc-theme-primary: #a09fa0;
+  --mdc-theme-on-primary: #ffffff;
   display:grid;
+  background-color: #5a5959;
+}
+
+#webcamButton:disabled{
+  background-color: #a09fa0;
+  color: #ffffff;
 }
 
 h1 {
   color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  -webkit-text-stroke: black 0.6px;
+  font-family: 'Proxima Nova', sans-serif;
 }
 
 header {
-  background-color: #007f8b;
-  padding:1em;
+  background-color: #c2c2c2;
   text-align: center;
+  border-radius: 2.5em;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.507);
 }
 
 h2 {
@@ -62,18 +72,18 @@ main section{
 }
 
 #p5canvas {
-  border: 2px solid black;
+  border: 2px solid #B7D0E0;
   visibility: visible;
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateX(40em);
   position:absolute;
   background: transparent;
 }
 
-/*#output_canvas{
-  transform: rotateY(180deg);
-}*/
-
 video{
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateX(40em);
   position:absolute;
+}
+
+#liveView{
+  text-align: center;
 }
