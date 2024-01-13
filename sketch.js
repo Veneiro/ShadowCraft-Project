@@ -187,6 +187,7 @@ function cancelDrawing(){
     grabando = false;
     console.log("Parar de grabar");
     activeHulls = [];
+    frozenHulls = [];
   }
 }
 
