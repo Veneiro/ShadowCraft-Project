@@ -1,5 +1,5 @@
-# ShadowCraft-Project
-Demo using MediaPipe Handpose
+# ShadowCraft
+Project made using MediaPipe Hand Landmarks technology
 
 ## Concave Hull Hands Form
 https://github.com/markroland/concaveHullJS
@@ -11,11 +11,17 @@ https://medium.com/@alptuan/trigonometric-blobs-f8a41fb7fba0
 ## Voice prompts for Start and Stop paint recording
 https://idmnyu.github.io/p5.js-speech/#examples
 
-### Prompts
-- Start: Start the recording timelapse
-- Freeze: Save the status of the canvas and stop recording
-- Stop: Save the current state of the canvas to an svg archive
+### Prompts (in Spanish)
+- Iniciar: Start the recording timelapse
+- Congelar: Save the status of the canvas, all the stroke you have
+- Finalizar: Save the current state of the canvas to a PNG archive
 
-## Decaimiento Exponencial
+- Borrar: Clear the canvas if you are in a recording
+- Cancelar: Exits the recording without saving the drawing you have
+
+## Exponential Decay
 Trace of the hands to do the drawing with Half-Life formula
 https://en.wikipedia.org/wiki/Half-life
+
+## Recommendations
+It is recommended to put your hands behind your back before saying "Finalizar" to avoid problems in your final drawing
