@@ -37,17 +37,17 @@ function setup() {
 }
 
 function gotSpeech(){
-  console.log(speechRec.resultString);
-
-  if(speechRec.resultString.includes(commands.START)) {
+  let resultadoDeVoz = (speechRec.resultString).toLowerCase();
+  console.log(resultadoDeVoz);
+  if(resultadoDeVoz.includes(commands.START)) {
     startRec();
   }
-  if(speechRec.resultString.includes(commands.FREEZE))
+  if(resultadoDeVoz.includes(commands.FREEZE))
     freeze();
-  if(speechRec.resultString.includes(commands.FINISH)){
+  if(resultadoDeVoz.includes(commands.FINISH)){
     stopRec();
   }
-  if(speechRec.resultString.includes(commands.EREASE)){
+  if(resultadoDeVoz.includes(commands.EREASE)){
     erease();
   }
 }
