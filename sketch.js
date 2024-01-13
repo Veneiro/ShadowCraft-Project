@@ -1,22 +1,23 @@
 let frozenHulls = [];
 let activeHulls = [];
-let storedHulls = [];
 let handPoints = [];
-let handPointsOtherHand = [];  
+let handPointsOtherHand = [];
 let grabando = false;
-let continuous = true;
-let interim = false;  //activar para que escuche constantemente
 
+let continuous = true;
+let interim = false; //Hace que se escuche constantemente
 let speechRec;
 
+// Variable que indicará que se debe guardar y limpiar el canvas
 let guardar = false;
 
 const commands = {
   START: "iniciar",
   FREEZE: "congelar",
   FINISH: "finalizar",
-  EREASE: "borrar"
-}
+  EREASE: "borrar",
+  CANCEL: "cancelar",
+};
 
 function setup() {
   let canvas = createCanvas(1280, 720);
@@ -30,37 +31,41 @@ function setup() {
 
   //Se puede cambiar para que constantemente esté escuchando y
   //el procesado de comandos verbales se haga más rápido
-  speechRec = new p5.SpeechRec('es-ES', gotSpeech);
+  speechRec = new p5.SpeechRec("es-ES", gotSpeech);
 
   speechRec.start(continuous, interim);
-  
 }
 
-function gotSpeech(){
-  let resultadoDeVoz = (speechRec.resultString).toLowerCase();
-  console.log(resultadoDeVoz);
-  if(resultadoDeVoz.includes(commands.START)) {
+function gotSpeech() {
+  let resultadoDeVoz = speechRec.resultString.toLowerCase();
+
+  if (resultadoDeVoz.includes(commands.START)) {
     startRec();
   }
-  if(resultadoDeVoz.includes(commands.FREEZE))
+  if (resultadoDeVoz.includes(commands.FREEZE)) {
     freeze();
-  if(resultadoDeVoz.includes(commands.FINISH)){
+  }
+  if (resultadoDeVoz.includes(commands.FINISH)) {
     stopRec();
   }
-  if(resultadoDeVoz.includes(commands.EREASE)){
+  if (resultadoDeVoz.includes(commands.EREASE)) {
     erease();
+  }
+  if(resultadoDeVoz.includes(commands.CANCEL)){
+    cancelDrawing();
   }
 }
 
 function draw() {
   clear();
 
-  if (keyIsDown(83)) {  //Letra s
+  //Letra 'S'
+  if (keyIsDown(83)) {
+    
     startRec();
   }
 
-  if(!grabando && !guardar)
-    return;
+  if (!grabando && !guardar) return;
 
   // Dibuja el casco convexo solo si hay puntos de la mano disponibles
   if (handPoints.length > 3) {
@@ -71,9 +76,8 @@ function draw() {
     if (hull) {
       drawFadingBlob(hull);
       // Almacena el casco convexo activo
-      activeHulls.push({ points: hull, alpha: 255 });
       if (grabando) {
-        storedHulls.push({ points: hull, alpha: 255 });
+        activeHulls.push({ points: hull, alpha: 255 });
       }
     }
     // Limpia los puntos de la mano
@@ -88,9 +92,8 @@ function draw() {
     if (hullSH) {
       drawFadingBlob(hullSH);
       // Almacena el casco convexo activo
-      activeHulls.push({ points: hullSH, alpha: 255 });
       if (grabando) {
-        storedHulls.push({ points: hullSH, alpha: 255 });
+        activeHulls.push({ points: hullSH, alpha: 255 });
       }
     }
 
@@ -99,19 +102,11 @@ function draw() {
   }
 
   for (let i = 0; i < activeHulls.length; i++) {
-    activeHulls[i].alpha -= 2; // Reduce la opacidad con el tiempo
-    if (activeHulls[i].alpha > 0) {
-      // Dibuja el casco convexo con el efecto de desvanecimiento y "blob"
-      drawFadingBlob(activeHulls[i].points, activeHulls[i].alpha);
-    }
-  }
-
-  for(let i = 0; i<storedHulls.length; i++){
     if (grabando) {
-      storedHulls[i].alpha -= 2;
-      if (storedHulls[i].alpha > 0) {
+      activeHulls[i].alpha -= 2; // Reduce la opacidad con el tiempo
+      if (activeHulls[i].alpha > 0) {
         // Dibuja el casco convexo con el efecto de desvanecimiento y "blob"
-        drawFadingBlob(storedHulls[i].points, storedHulls[i].alpha);
+        drawFadingBlob(activeHulls[i].points, activeHulls[i].alpha);
       }
     }
   }
@@ -124,64 +119,78 @@ function draw() {
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
   activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
 
-  if (keyIsDown(88)){  //Letra x
+  //Letra 'X'
+  if (keyIsDown(88)) {
+    
     stopRec();
   }
 
-  // Mueve los cascos convexos activos a los cascos congelados al presionar la barra espaciadora
-  if (keyIsDown(70)) {  //Letra f
+  //Letra 'F'
+  if (keyIsDown(70)) {
+    
     freeze();
   }
 
-  if(keyIsDown(71)){ //Letra g
+  //Letra 'G'
+  if (keyIsDown(71)) {
     activeHulls = [];
-    storedHulls = [];
     guardar = true;
   }
 
-  if(guardar){
-    saveCanvas(canvas, "canvas", "png");
+  // Si guardar el verdadero el canvas se limpiará y guardará
+  if (guardar) {
+    saveCanvas(canvas, "tu_dibujo", "png");
     guardar = false;
     frozenHulls = [];
   }
-
 }
 
+// Comienza la grabación de trazos
 function startRec() {
-  if(!grabando){
+  if (!grabando) {
     grabando = true;
     console.log("Grabando");
   }
 }
 
-function stopRec(){
-  if(grabando){
+// Para la grabación de trazos
+function stopRec() {
+  if (grabando) {
     grabando = false;
     console.log("Parar de grabar");
     activeHulls = [];
-    storedHulls = [];
     guardar = true;
   }
 }
 
-function erease(){
-  if(grabando){
-    grabando = false;
+// Borra el lienzo
+function erease() {
+  if (grabando) {
     console.log("Borrando lienzo...");
     activeHulls = [];
-    storedHulls = [];
     frozenHulls = [];
   }
 }
 
-function freeze(){
-  if(storedHulls.length > 0 && grabando) {
-    console.log("Congelando Trazo")
-    frozenHulls = frozenHulls.concat(storedHulls);
-    storedHulls = [];
+// Congela los trazos que haya en pantalla
+function freeze() {
+  if (activeHulls.length > 0 && grabando) {
+    console.log("Congelando Trazo");
+    frozenHulls = frozenHulls.concat(activeHulls);
+    activeHulls = [];
   }
 }
 
+// Te permite cancelar el dibujo y parar la grabación sin guardar
+function cancelDrawing(){
+  if (grabando) {
+    grabando = false;
+    console.log("Parar de grabar");
+    activeHulls = [];
+  }
+}
+
+// Encargado de dibujar los trazos
 function drawFadingBlob(blob, alpha = 255) {
   beginShape();
   fill(0, 0, 0, alpha); // Utiliza la opacidad especificada o la opacidad almacenada en el casco convexo
@@ -237,10 +246,12 @@ function normalizedToCanvasCoordinates(normalizedX, normalizedY) {
   return { x: canvasX, y: canvasY };
 }
 
+// Establecer los puntos de la primera mano
 function setHandPoints(points) {
   handPoints = points;
 }
 
+// Establecer los puntos de la segunda mano
 function setHandPointsOtherHand(points) {
   handPointsOtherHand = points;
 }
@@ -253,8 +264,4 @@ function createControlPoint(p1, p2) {
   let controlX = p1.x + cos(angle) * controlDistance;
   let controlY = p1.y + sin(angle) * controlDistance;
   return createVector(controlX, controlY);
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
