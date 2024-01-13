@@ -1,5 +1,5 @@
-# ShadowCraft
-Project made using MediaPipe Hand Landmarks technology
+![Texto alternativo](./logo.svg)
+<p align="center">Project made using MediaPipe Hand Landmarks technology</p>
 
 ## Concave Hull Hands Form
 https://github.com/markroland/concaveHullJS
