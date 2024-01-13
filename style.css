@@ -72,7 +72,7 @@ main section{
 }
 
 #p5canvas {
-  border: 2px solid #B7D0E0;
+  border: 2px solid #c2c2c2;
   visibility: visible;
   transform: rotateY(180deg) translateX(40em);
   position:absolute;
