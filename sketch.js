@@ -89,6 +89,9 @@ function draw() {
       drawFadingBlob(hullSH);
       // Almacena el casco convexo activo
       activeHulls.push({ points: hullSH, alpha: 255 });
+      if (grabando) {
+        storedHulls.push({ points: hullSH, alpha: 255 });
+      }
     }
 
     // Limpia los puntos de la otra mano
