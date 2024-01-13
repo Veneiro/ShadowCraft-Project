@@ -55,6 +55,10 @@ function gotSpeech(){
 function draw() {
   clear();
 
+  if (keyIsDown(83)) {  //Letra s
+    startRec();
+  }
+
   if(!grabando && !guardar)
     return;
 
@@ -117,9 +121,7 @@ function draw() {
   // Elimina los cascos convexos que hayan alcanzado una opacidad mínima
   activeHulls = activeHulls.filter((hull) => hull.alpha > 0);
 
-  if (keyIsDown(83)) {  //Letra s
-    startRec();
-  } else if (keyIsDown(88)){  //Letra x
+  if (keyIsDown(88)){  //Letra x
     stopRec();
   }
 
